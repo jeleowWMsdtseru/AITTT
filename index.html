@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Train The Trainers (TTT) Program | TheLead.io</title>
+  
+  <!-- SEO & Social Meta Tags -->
+  <meta name="description" content="Become a certified AI Trainer in one month with TheLead.io. Our TTT program is designed for HRDC-trainers, career switchers, and internal change agents.">
+  <meta property="og:title" content="AI Train The Trainers (TTT) Program | TheLead.io">
+  <meta property="og:description" content="Become a certified AI Trainer in one month with TheLead.io. Our TTT program is designed for HRDC-trainers, career switchers, and internal change agents.">
+  <meta property="og:image" content="https://thelead.io/wp-content/uploads/2020/07/Web-development-illustration-1march-july-06.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="AI Train The Trainers (TTT) Program | TheLead.io">
+  <meta property="twitter:description" content="Become a certified AI Trainer in one month with TheLead.io. Our TTT program is designed for HRDC-trainers, career switchers, and internal change agents.">
+  <meta property="twitter:image" content="https://thelead.io/wp-content/uploads/2020/07/Web-development-illustration-1march-july-06.png"> <!-- Social sharing image -->
+
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '613351752149959');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=613351752149959&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+  
+  <!-- Favicons -->
+  <link rel="icon" href="https://thelead.io/wp-content/uploads/2020/04/cropped-lead-favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" href="https://thelead.io/wp-content/uploads/2020/04/cropped-lead-favicon-192x192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="https://thelead.io/wp-content/uploads/2020/04/cropped-lead-favicon-192x192.png" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- THREE.js for WebGL -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    /* Custom styles */
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #f9fafb; /* bg-gray-50 */
+    }
+    .card-hover {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+    .sticky-nav-padding {
+        padding-top: 72px;
+    }
+    .bg-gradient-yellow {
+        background-image: linear-gradient(to right, var(--tw-gradient-stops));
+        --tw-gradient-from: #f59e0b; /* amber-500 */
+        --tw-gradient-to: #facc15;   /* yellow-400 */
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+    }
+    .header-bg {
+        /* Updated to the new gradient */
+        background-image: linear-gradient(to right, #BE185D, #FA8F46);
+        background-size: cover;
+        background-position: center;
+        position: relative; /* For z-indexing context */
+        overflow: hidden; /* To contain the canvas */
+    }
+    /* Style for the WebGL canvas */
+    #webgl-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1; /* Behind the content */
+    }
+    
+    /* Accordion styles */
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    .bg-custom-blue {
+        background-color: #BE185D; /* Changed from #111827 */
+    }
+    .bg-custom-blue-nav {
+        background-color: rgb(190 24 93 / 0.8); /* Changed from rgb(17 24 39 / 0.8) */
+    }
+
+    /* --- New Marquee Styles --- */
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); } /* Scroll one half of the total width */
+    }
+    .marquee-container {
+      background-color: #facc15; /* yellow-400 */
+      color: #111827; /* gray-900 */
+      overflow: hidden;
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .marquee-content {
+      display: flex;
+      width: fit-content; /* Let it be as wide as its content */
+      padding: 0.75rem 0; /* py-3 */
+      font-weight: 600;
+      animation: scroll 20s linear infinite;
+    }
+    .marquee-content > span { /* Changed from .marquee-content span */
+       white-space: nowrap;
+       padding: 0 1rem; /* Padding for the repeating blocks */
+       flex-shrink: 0;
+    }
+    
+    /* --- Program Structure Timeline --- */
+    .timeline {
+        position: relative;
+        max-width: 36rem; /* max-w-lg */
+        margin: 0 auto;
+    }
+    /* The vertical line */
+    .timeline::after {
+        content: '';
+        position: absolute;
+        width: 6px;
+        background-color: #f59e0b; /* amber-500 */
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -3px;
+        border-radius: 3px;
+    }
+    /* Container around content */
+    .timeline-container {
+        padding: 10px 40px;
+        position: relative;
+        background-color: inherit;
+        width: 50%;
+    }
+    /* The circles on the timeline */
+    .timeline-container::after {
+        content: '';
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        right: -17px;
+        background-color: white;
+        border: 4px solid #f59e0b; /* amber-500 */
+        top: 15px;
+        border-radius: 50%;
+        z-index: 1;
+    }
+    /* Place the container to the left */
+    .timeline-left {
+        left: 0;
+    }
+    /* Place the container to the right */
+    .timeline-right {
+        left: 50%;
+    }
+    /* Add arrows to the left container (pointing right) */
+    .timeline-left::before {
+        content: " ";
+        height: 0;
+        position: absolute;
+        top: 22px;
+        width: 0;
+        z-index: 1;
+        right: 30px;
+        border: medium solid white;
+        border-width: 10px 0 10px 10px;
+        border-color: transparent transparent transparent white;
+    }
+    /* Add arrows to the right container (pointing left) */
+    .timeline-right::before {
+        content: " ";
+        height: 0;
+        position: absolute;
+        top: 22px;
+        width: 0;
+        z-index: 1;
+        left: 30px;
+        border: medium solid white;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent white transparent transparent;
+    }
+    /* Fix the circle for right containers */
+    .timeline-right::after {
+        left: -16px;
+    }
+    /* The actual content */
+    .timeline-content {
+        padding: 20px 30px;
+        background-color: white;
+        position: relative;
+        border-radius: 0.5rem; /* rounded-lg */
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+    }
+    /* Responsive timeline */
+    @media screen and (max-width: 768px) {
+        /* Place the timeline to the left */
+        .timeline::after {
+            left: 31px;
+        }
+        /* Full-width containers */
+        .timeline-container {
+            width: 100%;
+            padding-left: 70px;
+            padding-right: 25px;
+        }
+        /* Make sure that all arrows are pointing leftwards */
+        .timeline-container::before {
+            left: 60px;
+            border: medium solid white;
+            border-width: 10px 10px 10px 0;
+            border-color: transparent white transparent transparent;
+        }
+        /* Make sure all circles are on the left side */
+        .timeline-left::after, .timeline-right::after {
+            left: 15px;
+        }
+        /* Make all containers behave like timeline-right */
+        .timeline-right {
+            left: 0%;
+        }
+        .timeline-left {
+            left: 0%;
+        }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Navigation Bar -->
+  <nav id="navbar" class="bg-custom-blue-nav backdrop-blur-md text-white fixed top-0 left-0 right-0 z-50 shadow-lg">
+    <div class="container mx-auto px-6">
+        <div class="flex justify-between items-center h-16">
+            <a href="https://www.thelead.io" target="_blank" rel="noopener noreferrer">
+              <img src="https://thelead.io/wp-content/uploads/2019/11/lead-white-logo.png" alt="theLead.io Logo" class="h-8 w-auto">
+            </a>
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#program-structure" class="hover:text-amber-300 transition-colors">Program Structure</a>
+                <a href="#curriculum" class="hover:text-amber-300 transition-colors">Curriculum</a>
+                <a href="#trainers" class="hover:text-amber-300 transition-colors">Trainers</a>
+                <a href="#faq" class="hover:text-amber-300 transition-colors">FAQ</a>
+                <a id="reg-link-nav-desktop" href="https://forms.gle/iezwx7m8ZKWaCaZb7" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-600 text-gray-900 px-4 py-2 rounded-md font-semibold transition-all">Register Now</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-custom-blue px-6 pb-4 space-y-2">
+        <a href="#program-structure" class="block hover:text-amber-300 transition-colors py-2">Program Structure</a>
+        <a href="#curriculum" class="block hover:text-amber-300 transition-colors py-2">Curriculum</a>
+        <a href="#trainers" class="block hover:text-amber-300 transition-colors py-2">Trainers</a>
+        <a href="#faq" class="block hover:text-amber-300 transition-colors py-2">FAQ</a>
+        <a id="reg-link-nav-mobile" href="https://forms.gle/iezwx7m8ZKWaCaZb7" target="_blank" rel="noopener noreferrer" class="block bg-amber-500 hover:bg-amber-600 text-gray-900 px-4 py-2 rounded-md font-semibold transition-all text-center mt-2">Register Now</a>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <header class="header-bg text-white pt-32 pb-20 md:pt-40 md:pb-28">
+    <!-- WebGL Canvas Background -->
+    <canvas id="webgl-bg"></canvas>
+    
+    <!-- Header Content (Ensure it's on top) -->
+    <div class="container mx-auto px-6 text-center relative z-10">
+      <h1 class="text-4xl md:text-6xl font-black leading-tight mb-4">
+        AI Train The Trainers (TTT) Program
+      </h1>
+      <!-- Added Training Dates -->
+      <p class="text-base font-semibold text-amber-300 uppercase tracking-wider mb-2">
+          Next Cohort: December 19-21, 2025
+      </p>
+      <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+        Become a certified AI Trainer in one month. This program is for current HRDC-trainers, AI career switchers, and internal AI change agents.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a id="reg-link-header" href="https://forms.gle/iezwx7m8ZKWaCaZb7" target="_blank" rel="noopener noreferrer" class="inline-block w-full sm:w-auto bg-gradient-yellow text-gray-900 font-bold text-lg px-10 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+          Book Your Seat Now
+        </a>
+      </div>
+      <!-- Social Proof -->
+      <div class="mt-4 flex items-center justify-center space-x-1 text-amber-400">
+        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+        <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+        <i data-lucide="star-half" class="w-5 h-5 fill-current"></i>
+      </div>
+      <p class="text-sm text-gray-300 mt-2">Join our next cohort of certified AI trainers. 4.5/5 stars from 600+ professionals trained.</p>
+    </div>
+  </header>
+  
+  <!-- Moving Ribbon -->
+  <div class="marquee-container">
+    <div class="marquee-content">
+      <span class="marquee-text-block">Price: RM18,000 + SST (HRDC Claimable). Limited to 15 participants maximum.</span>
+      <span class="marquee-text-block">Price: RM18,000 + SST (HRDC Claimable). Limited to 15 participants maximum.</span>
+      <!-- Add duplicates for seamless loop -->
+      <span class="marquee-text-block">Price: RM18,000 + SST (HRDC Claimable). Limited to 15 participants maximum.</span>
+      <span class="marquee-text-block">Price: RM18,000 + SST (HRDC Claimable). Limited to 15 participants maximum.</span>
+    </div>
+  </div>
+  
+  <main class="bg-gray-50">
+    <div class="container mx-auto px-6 py-12 md:py-20">
+    
+      <!-- START: Two-column layout grid -->
+      <div class="grid lg:grid-cols-3 gap-12">
+        
+        <!-- START: Main content column -->
+        <div class="lg:col-span-2 space-y-12">
+
+          <!-- NEW Program Structure Section (Replaces Trusted By) -->
+          <section id="program-structure" class="bg-white p-8 py-12 text-center rounded-xl shadow-lg border border-gray-200 card-hover">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-12">Your 1-Month Path to AI Trainer Certification</h2>
+            <div class="max-w-4xl mx-auto">
+                <img src="https://github.com/jeleowWMsdtseru/aitrainthetrainers/blob/main/AI%20Trainers.jpg?raw=true" alt="AI Train The Trainers Program Structure" class="rounded-lg shadow-md border border-gray-200">
+            </div>
+          </section>
+
+          <!-- NEW Trainers Section ADDED HERE -->
+          <section id="trainers" class="bg-white p-8 rounded-xl shadow-lg border border-gray-200 card-hover">
+            <h2 class="text-2xl font-bold mb-6 flex items-center"><i data-lucide="graduation-cap" class="w-7 h-7 mr-3 text-amber-500"></i>Your Expert Trainers</h2>
+            <div class="space-y-8">
+                <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <img src="https://pbs.twimg.com/profile_images/738570826291646464/EEH1StZS_400x400.jpg" alt="Dr. Lau Cher Han" class="rounded-full w-24 h-24 border-4 border-gray-200 object-cover flex-shrink-0">
+                    <div>
+                        <h3 class="font-semibold text-xl text-center sm:text-left text-gray-800">Dr. Lau Cher Han</h3>
+                        <p class="text-gray-600 text-center sm:text-left">Chief Data Scientist, national AI advisor, and expert trainer in data science and automation.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <img src="https://www.kosmo.com.my/wp-content/uploads/2025/03/Warren_Leow.jpg123-1024x768.jpg" alt="Warren Leow" class="rounded-full w-24 h-24 border-4 border-gray-200 object-cover flex-shrink-0">
+                    <div>
+                        <h3 class="font-semibold text-xl text-center sm:text-left text-gray-800">Warren Leow</h3>
+                        <p class="text-gray-600 text-center sm:text-left">Founder of Supern8n, Co-founder of KAIN, and advisor to MED4IRN, with deep experience in scaling AI across industries.</p>
+                    </div>
+                </div>
+                <!-- Removed Edmund Hee's section -->
+            </div>
+          </section>
+
+          <!-- NEW Trainees Section -->
+          <section id="trainees" class="bg-white p-8 rounded-xl shadow-lg border border-gray-200 card-hover">
+            <h2 class="text-2xl font-bold mb-6 text-center">Join Our Growing Network of Certified Trainers</h2>
+            <p class="text-gray-600 text-center mb-8">You'll be in good company. Here are just some of the professionals who have completed our TTT program.</p>
+            <div class="max-w-4xl mx-auto">
+                <img src="https://github.com/jeleowWMsdtseru/AI-for-legal/blob/main/Trainees.png?raw=true" alt="Previous Trainees from TheLead.io" class="rounded-lg shadow-md border border-gray-200 w-full h-auto">
+            </div>
+          </section>
+          
+          <!-- Certification Section (Original) -->
+          <section id="certification" class="bg-white p-8 rounded-xl shadow-lg border border-gray-200 card-hover">
+            <h2 class="text-2xl font-bold mb-6 text-center md:text-left">Our Certification</h2>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="order-2 md:order-1">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Backed by a Decade of Excellence</h3>
+                    <p class="text-gray-600 mb-4">
+                        Our certification is more than just a piece of paper; it's a testament to a legacy of quality training that spans over 10 years. We have a proven track record of empowering professionals and organizations with cutting-edge skills.
+                    </p>
+                    <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                        <li><strong>Industry-Recognized:</strong> Validated by a decade of successful training programs.</li>
+                        <li><strong>Trusted by Leaders:</strong> Our long history has earned the trust of top corporations and government agencies.</li>
+                        <li><strong>Commitment to Quality:</strong> 10 years of refining our curriculum to meet the highest standards.</li>
+                    </ul>
+                </div>
+                <div class="order-1 md:order-2">
+                    <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); overflow: hidden; border-radius: 8px; will-change: transform;">
+                      <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+                        src="https://www.canva.com/design/DAGscsCodTA/x7UlWhx3oQnezjiEGJqYZQ/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+                      </iframe>
+                    </div>
+                </div>
+            </div>
+          </section>
+
+        </div>
+        <!-- END: Main content column -->
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-1 space-y-8 lg:sticky lg:top-24 self-start">
+          <!-- Outcomes Section -->
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 card-hover">
+              <h3 class="text-xl font-bold mb-4 flex items-center"><i data-lucide="rocket" class="w-6 h-6 mr-3 text-amber-500"></i>Your TTT Program Outcomes</h3>
+              <ul class="space-y-3 text-gray-600">
+                  <li class="flex items-start"><i data-lucide="check" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Become a Certified AI Trainer</strong> by TheLead.io, backed by 10+ years of training excellence.</span></li>
+                  <li class="flex items-start"><i data-lucide="check" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Receive 5+ Client-Ready</strong> AI training modules and content.</span></li>
+                  <li class="flex items-start"><i data-lucide="check" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Gain Real-World Experience</strong> by co-facilitating 1-2 live training sessions.</span></li>
+                  <li class="flex items-start"><i data-lucide="check" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Master AI Marketing</strong> and learn how to position yourself as an expert.</span></li>
+                  <li class="flex items-start"><i data-lucide="check" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Learn to Localize Content</strong> and triangulate client needs for maximum impact.</span></li>
+              </ul>
+          </div>
+          
+          <!-- NEW ROI Section (Replaces Benefits) -->
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 card-hover">
+              <h3 class="text-xl font-bold mb-4 flex items-center"><i data-lucide="target" class="w-6 h-6 mr-3 text-amber-500"></i>A Partnership for Growth & ROI</h3>
+              <p class="text-gray-600 mb-4">We are invested in your success. Our goal is to grow a global network of expert trainers.</p>
+              <ul class="space-y-4 text-gray-600">
+                  <li class="flex items-start"><i data-lucide="check-circle-2" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Net Payback in &lt;6 Months:</strong> Our goal is to get you to a net payback in under 6 months (e.g., RM3k/month x 6 months).</span></li>
+                  <li class="flex items-start"><i data-lucide="check-circle-2" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Scale With Us:</strong> We want to grow the number of trainers to scale TheLead.io and Supern8n.com regionally and globally.</span></li>
+                  <li class="flex items-start"><i data-lucide="check-circle-2" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Service Enterprise Clients:</strong> Enterprise success requires domain expertise like yours. We need partners to service high-value clients.</span></li>
+                  <li class="flex items-start"><i data-lucide="check-circle-2" class="w-5 h-5 mr-2 text-amber-500 mt-1 flex-shrink-0"></i><span><strong>Build Global Businesses:</strong> There is ample scope to grow global businesses out of Malaysia, together.</span></li>
+              </ul>
+          </div>
+        </aside>
+        <!-- END: Sidebar -->
+        
+      </div>
+      <!-- END: Two-column layout grid -->
+
+      <!-- Video Testimonials Section (Modified) -->
+      <section id="video-testimonials" class="mt-20">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Our Previous Training Sessions</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="aspect-[9/16] bg-black rounded-xl shadow-lg flex items-center justify-center card-hover overflow-hidden">
+                <!-- FIXED: Replaced video with new user-provided link -->
+                <iframe src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fthelead.io%2Fvideos%2F1151620077024310%2F&show_text=false&width=267&t=0" class="w-full h-full" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+            </div>
+            <div class="aspect-[9/16] bg-black rounded-xl shadow-lg flex items-center justify-center card-hover overflow-hidden">
+                <iframe src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fthelead.io%2Fvideos%2F1118334936777034%2F&show_text=false&width=267&t=0" class="w-full h-full" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+            </div>
+            <div class="aspect-[9/16] bg-black rounded-xl shadow-lg flex items-center justify-center card-hover overflow-hidden">
+                <iframe src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1250093550465260%2F&show_text=false&width=267&t=0" class="w-full h-full" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+            </div>
+        </div>
+      </section>
+
+      
+      <!-- NEW Earn Back Program Section -->
+      <section id="earn-back" class="mt-20">
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200 card-hover">
+          <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Earn Back Program with ROI</h2>
+          <div class="max-w-4xl mx-auto">
+              <img src="https://github.com/jeleowWMsdtseru/AI-for-legal/blob/main/ROI.png?raw=true" alt="Earn Back Program ROI" class="rounded-lg shadow-md border border-gray-200 w-full h-auto">
+          </div>
+        </div>
+      </section>
+
+
+      <!-- Gallery Section (Modified) -->
+      <section id="community-support" class="mt-20">
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200 card-hover">
+          <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">3 Months of Co-Facilitator & Community Support</h2>
+          <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+            
+            <!-- Image Column -->
+            <div>
+              <img src="https://github.com/jeleowWMsdtseru/AI-for-legal/blob/main/phonewhatsapp-scaled-e1636707258270.jpg?raw=true" alt="Community Support" class="rounded-xl shadow-md w-full h-auto object-cover" style="max-width: 75%;">
+            </div>
+
+            <!-- Text Column -->
+            <div>
+              <h3 class="text-2xl font-semibold text-gray-800 mb-4">Your Learning Doesn't End Here</h3>
+              <p class="text-gray-600 mb-4">
+                Join our exclusive, private community for 3 months post-program. This is your space to get ongoing support, share your training successes, and network with fellow AI trainers.
+              </p>
+              <ul class="space-y-2 text-gray-600 list-disc list-inside">
+                  <li>Get your specific training questions answered by our head coaches.</li>
+                  <li>See how other trainers are localizing content for clients.</li>
+                  <li>Stay updated on the latest AI tools and training techniques.</li>
+                  <li>Find accountability partners to help you grow your training business.</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section (Modified) -->
+      <section id="faq" class="mt-20">
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200 card-hover">
+          <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">AI Train The Trainers: FAQ</h2>
+          <div class="max-w-3xl mx-auto space-y-4" id="faq-accordion">
+
+            <div class="border-b border-gray-200 py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>What if I have no prior training experience?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p>This program is designed for both existing trainers and career switchers. The 5-step presentation practice and co-facilitation sessions are specifically built to give you the practical experience and confidence you need to lead a room.</p>
+              </div>
+            </div>
+
+            <div class="border-b border-gray-200 py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>What if I'm not a deep AI expert or coder?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p>This is a "Train The Trainer" program, not a Ph.D. in AI. We provide you with the necessary AI theory, automation knowledge, and client-ready materials. Your role as a trainer is to facilitate learning, and we teach you exactly how to do that effectively, even with complex topics.</p>
+              </div>
+            </div>
+            
+            <div class="border-b border-gray-200 py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>Is this program HRDC-claimable?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p>Yes, this program is fully HRDC claimable. We even have a dedicated module on "Training to be HRDC trainer" to guide you through the requirements and process.</p>
+              </div>
+            </div>
+
+            <div class="border-b border-gray-200 py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>What is the total time commitment?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p>The program is designed to be completed within one month. This includes the pre-program class, the 3-day intensive workshop, and the self-paced learning and teaching practicals. The 3 months of support begins *after* you complete the core program.</p>
+              </div>
+            </div>
+
+            <div class="border-b border-gray-200 py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>What is your training track record?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p class="mb-2">Our achievements speak for themselves:</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>5,000+ professionals trained</strong> across various industries.</li>
+                    <li>Major corporate clients including <strong>Mr DIY, Ryt Bank, CTOS, MyNews, Petronas, Standard Chartered, Intel, Shell, IBM,</strong> and various government agencies.</li>
+                    <li><strong>International recognition</strong> with trainers involved in national AI strategies and university advisory boards.</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="border-b border-gray-200 py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>How do I register?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p>Click any "Register Now" or "Book Your Seat Now" button on this page. This will take you to our registration form. You can also message us on WhatsApp for inquiries.</p>
+              </div>
+            </div>
+
+             <div class="py-4">
+              <button class="accordion-header w-full flex justify-between items-center text-left text-lg font-semibold text-gray-800 hover:text-amber-600 focus:outline-none">
+                <span>Who is the training provider?</span>
+                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform transform"></i>
+              </button>
+              <div class="accordion-content mt-2 text-gray-600">
+                <p>This training is provided by Ucan Technologies Sdn. Bhd. (1207802-V) which operates TheLead.io</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer CTA -->
+      <section id="register" class="mt-20 text-center bg-gray-900 text-white rounded-xl p-10 md:p-16 shadow-2xl bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        <div class="relative z-10">
+          <h2 class="text-4xl font-extrabold mb-4">Start Your Journey as a Certified AI Trainer</h2>
+          <p class="text-2xl text-amber-400 font-bold mb-2">
+            Price: RM18,000 + SST (HRDC Claimable)
+          </p>
+          <p class="text-gray-400 mb-8">Includes 3-day intensive workshop, all training materials, practicals, and 3-month support.</p>
+          <a id="reg-link-footer" href="https://forms.gle/iezwx7m8ZKWaCaZb7" target="_blank" rel="noopener noreferrer" class="inline-block bg-gradient-yellow text-gray-900 font-bold text-lg px-10 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+            Book Your Seat Now
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-200">
+    <div class="container mx-auto px-6 py-8 text-center">
+      <p class="mb-4">Organized by <strong>theLead.io</strong></p>
+      <p>For inquiries: <a href="mailto:chelsea@thelead.io" class="text-amber-300 hover:text-amber-200">chelsea@thelead.io</a></p>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp Button -->
+  <a href="https://wa.me/15557074708" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-all transform hover:scale-110 z-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413C23.998 18.667 18.664 24 .057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.074z"/>
+      </svg>
+  </a>
+
+  <!-- Page Functionality Script -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // --- Simplified Pricing & Links ---
+    function setProgramDetails() {
+      const registrationLink = "https://forms.gle/iezwx7m8ZKWaCaZb7"; // Placeholder link
+      
+      // Get all registration links
+      const allLinks = [
+        document.getElementById('reg-link-nav-desktop'),
+        document.getElementById('reg-link-nav-mobile'),
+        document.getElementById('reg-link-header'),
+        document.getElementById('reg-link-footer')
+      ];
+
+      // Set all reg links
+      allLinks.forEach(link => {
+          if (link) {
+              link.href = registrationLink;
+          }
+      });
+      
+      // Removed pricing from JS as it's now hardcoded with HRDC text in HTML
+    }
+
+    // --- Run functions on page load ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setProgramDetails();
+        
+        // --- Accordion Functionality ---
+        const faqAccordion = document.getElementById('faq-accordion');
+        if (faqAccordion) {
+            faqAccordion.addEventListener('click', function (e) {
+              const header = e.target.closest('.accordion-header');
+              if (!header) return;
+
+              const content = header.nextElementSibling;
+              if (!content) return; // Add guard clause for content
+              
+              const icon = header.querySelector('i');
+
+              // Close all other accordions
+              document.querySelectorAll('.accordion-content').forEach((item) => {
+                if (item !== content) {
+                  item.style.maxHeight = '0';
+                  const otherIcon = item.previousElementSibling.querySelector('i');
+                  if (otherIcon) {
+                      otherIcon.classList.remove('rotate-180');
+                  }
+                }
+              });
+
+              // Toggle current accordion
+              if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = '0';
+                if (icon) icon.classList.remove('rotate-180');
+              } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                if (icon) icon.classList.add('rotate-180');
+              }
+            });
+        }
+        
+        // Only init WebGL if THREE is loaded
+        if (typeof THREE !== 'undefined') {
+            initWebGLBackground(); // Initialize the WebGL background
+        } else {
+            console.error("THREE.js is not loaded. WebGL background will not start.");
+        }
+    });
+
+    // --- WebGL Background ---
+    function initWebGLBackground() {
+        let scene, camera, renderer, particles;
+        const header = document.querySelector('.header-bg');
+        if (!header) {
+            console.error("Header element not found.");
+            return; // Guard clause
+        }
+
+        // 1. Scene
+        scene = new THREE.Scene();
+
+        // 2. Camera
+        camera = new THREE.PerspectiveCamera(75, header.clientWidth / header.clientHeight, 0.1, 1000);
+        camera.position.z = 2; // Positioned to see the particles
+
+        // 3. Renderer
+        const canvas = document.getElementById('webgl-bg');
+        if (!canvas) {
+            console.error("WebGL canvas not found.");
+            return;
+        }
+        
+        try {
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true // Transparent background
+            });
+        } catch (e) {
+            console.error("Error creating WebGL renderer:", e);
+            return; // Stop if WebGL fails
+        }
+        
+        renderer.setSize(header.clientWidth, header.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // 4. Particles
+        const particleCount = 5000;
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const color = new THREE.Color();
+
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            
+            // Position (a sphere-like distribution)
+            const radius = 5;
+            const u = Math.random();
+            const v = Math.random();
+            const theta = 2 * Math.PI * u;
+            const phi = Math.acos(2 * v - 1);
+            positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = radius * Math.cos(phi);
+
+            // Color (shades of gray and light amber)
+            const randomColor = Math.random(); // FIXED: Removed extra dot
+            if (randomColor < 0.8) {
+                color.set(0xAAAAAA); // 80% are light gray
+            } else {
+                color.set(0xF59E0B); // 20% are amber
+            }
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.015, // Small, subtle particles
+            vertexColors: true, // Use the colors from geometry
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending // Brighter where particles overlap
+        });
+
+        particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // 5. Mouse Interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        const onMouseMove = (event) => {
+            // Calculate mouse position in normalized device coordinates (-1 to +1)
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        };
+        document.addEventListener('mousemove', onMouseMove);
+
+        // 6. Animation Loop
+        const clock = new THREE.Clock();
+        const animate = () => {
+            const elapsedTime = clock.getElapsedTime();
+
+            // Slow rotation
+            particles.rotation.y = elapsedTime * 0.05;
+            particles.rotation.x = elapsedTime * 0.02;
+            
+            // Mouse parallax effect (subtle)
+            // Use lerping for smooth camera movement
+            camera.position.x += (mouseX * 0.1 - camera.position.x) * 0.02;
+            camera.position.y += (mouseY * 0.1 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+        animate();
+
+        // 7. Resize Listener
+        const onResize = () => {
+            if (header) {
+                // Update camera
+                camera.aspect = header.clientWidth / header.clientHeight;
+                camera.updateProjectionMatrix();
+                
+                // Update renderer
+                renderer.setSize(header.clientWidth, header.clientHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            }
+        };
+        window.addEventListener('resize', onResize);
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
